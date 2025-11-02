@@ -30,6 +30,7 @@ class CommentRepositoryTest {
         u.setUsername("alex");
         u.setEmail("alex@example.com");
         u.setPassword("hash");
+        u.setRoles("USER");
         userRepository.save(u);
 
         Video v = new Video();
@@ -60,6 +61,7 @@ class CommentRepositoryTest {
         u.setUsername("mike");
         u.setEmail("mike@example.com");
         u.setPassword("hash");
+        u.setRoles("USER");
         userRepository.save(u);
 
         Video v = new Video();

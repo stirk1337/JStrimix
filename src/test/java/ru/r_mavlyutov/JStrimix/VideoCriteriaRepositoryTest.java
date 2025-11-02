@@ -31,6 +31,7 @@ class VideoCriteriaRepositoryTest {
         author.setUsername("alice");
         author.setEmail("alice@example.org");
         author.setPassword("$2a$10$hash");
+        author.setRoles("USER");
         userRepository.save(author);
 
         Instant from = Instant.now().minusSeconds(10);
@@ -59,6 +60,7 @@ class VideoCriteriaRepositoryTest {
         author.setUsername("ann");
         author.setEmail("ann@example.org");
         author.setPassword("$2a$10$hash");
+        author.setRoles("USER");
         userRepository.save(author);
 
         Category cat = new Category();

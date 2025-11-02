@@ -22,6 +22,7 @@ class UserRepositoryTest {
         user.setUsername("john");
         user.setEmail("john@example.com");
         user.setPassword("$2a$10$hash");
+        user.setRoles("USER");
         userRepository.save(user);
 
         // act
@@ -38,12 +39,14 @@ class UserRepositoryTest {
         u1.setUsername("dup");
         u1.setEmail("dup1@ex.com");
         u1.setPassword("hash");
+        u1.setRoles("USER");
         userRepository.save(u1);
 
         User u2 = new User();
         u2.setUsername("dup");
         u2.setEmail("dup2@ex.com");
         u2.setPassword("hash");
+        u2.setRoles("USER");
         Assertions.assertThrows(Exception.class, () -> userRepository.saveAndFlush(u2));
     }
 }

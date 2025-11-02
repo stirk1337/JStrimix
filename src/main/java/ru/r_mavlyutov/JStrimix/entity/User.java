@@ -2,6 +2,11 @@ package ru.r_mavlyutov.JStrimix.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Entity
 @Table(
         name = "users",
@@ -26,6 +31,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String roles; // Формат: "USER,ADMIN" или просто "USER"
+
     // getters/setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -35,4 +43,18 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getRoles() { return roles; }
+    public void setRoles(String roles) { this.roles = roles; }
+
+    /**
+     * Возвращает Set ролей для Spring Security
+     */
+    public Set<String> getRolesSet() {
+        if (roles == null || roles.isBlank()) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(roles.split(","))
+                .map(String::trim)
+                .collect(Collectors.toSet());
+    }
 }
