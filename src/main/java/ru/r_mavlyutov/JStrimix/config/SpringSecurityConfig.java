@@ -25,6 +25,8 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Публичные эндпоинты
                         .requestMatchers("/login", "/register", "/register/process", "/error").permitAll()
+                        // API отчетов доступно без аутентификации для тестирования
+                        .requestMatchers("/api/reports/**").permitAll()
                         // Swagger доступен только для ADMIN
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").hasRole("ADMIN")
                         // Все остальное требует аутентификации
