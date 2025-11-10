@@ -1,52 +1,28 @@
 package ru.r_mavlyutov.JStrimix.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import ru.r_mavlyutov.JStrimix.dao.custom.VideoRepositoryCustom;
 import ru.r_mavlyutov.JStrimix.entity.Video;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
-@Component
-public class VideoRepository implements CrudRepository<Video, Long> {
+@RepositoryRestResource(path = "videos", collectionResourceRel = "videos")
+public interface VideoRepository
+        extends CrudRepository<Video, Long>, VideoRepositoryCustom {
 
-    private final List<Video> videoContainer;
+    List<Video> findAll();
 
-    @Autowired
-    public VideoRepository(List<Video> videoContainer) {
-        this.videoContainer = videoContainer;
-    }
+    // Требование задания: Query Lookup с ключевыми словами And + Between
+    // Поиск видео по автору и интервалу дат создания
+    List<Video> findByAuthor_UsernameAndCreatedAtBetween(
+            String authorUsername,
+            Instant createdAfter,
+            Instant createdBefore
+    );
 
-    @Override
-    public void create(Video video) {
-        videoContainer.add(video);
-    }
-
-    @Override
-    public Video read(Long id) {
-        Optional<Video> video = videoContainer.stream()
-                .filter(v -> v.getId().equals(id))
-                .findFirst();
-        return video.orElse(null);
-    }
-
-    @Override
-    public void update(Video video) {
-        for (int i = 0; i < videoContainer.size(); i++) {
-            if (videoContainer.get(i).getId().equals(video.getId())) {
-                videoContainer.set(i, video);
-                return;
-            }
-        }
-    }
-
-    @Override
-    public void delete(Long id) {
-        videoContainer.removeIf(video -> video.getId().equals(id));
-    }
-
-    public List<Video> findAll() {
-        return new ArrayList<>(videoContainer);
-    }
+    // Пара удобных методов
+    List<Video> findByCategory_Name(String categoryName);
+    List<Video> findByTitleContainingIgnoreCase(String q);
 }
