@@ -25,6 +25,12 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Публичные эндпоинты
                         .requestMatchers("/login", "/register", "/register/process", "/error").permitAll()
+                        // Статические ресурсы (видео, превью) - используем один сегмент пути
+                        .requestMatchers("/videos/*/video", "/videos/*/preview").permitAll()
+                        // Просмотр видео (публичные) - конкретные пути
+                        .requestMatchers("/videos", "/videos/*").permitAll()
+                        // Просмотр профилей (публичные)
+                        .requestMatchers("/profile/**").permitAll()
                         // API отчетов доступно без аутентификации для тестирования
                         .requestMatchers("/api/reports/**").permitAll()
                         // Swagger доступен только для ADMIN
@@ -34,7 +40,7 @@ public class SpringSecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/videos/list", true)
+                        .defaultSuccessUrl("/videos", true)
                         .permitAll()
                 )
                 .logout(logout -> logout

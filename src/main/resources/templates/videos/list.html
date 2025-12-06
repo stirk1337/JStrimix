@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>JStrimix - Видеохостинг</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .video-card {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .search-bar {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/videos">
+                <i class="bi bi-play-circle-fill"></i> JStrimix
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/videos">Главная</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/videos/upload">
+                            <i class="bi bi-upload"></i> Загрузить видео
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/profile">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Выход</button>
+                        </form>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">Войти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="search-bar">
+            <form th:action="@{/videos}" method="get" class="d-flex">
+                <input type="text" class="form-control me-2" name="search" th:value="${search}" placeholder="Поиск видео...">
+                <select class="form-select me-2" name="category" style="max-width: 200px;">
+                    <option value="">Все категории</option>
+                    <option th:each="cat : ${categories}" 
+                            th:value="${cat.id}" 
+                            th:text="${cat.name}"
+                            th:selected="${selectedCategory != null && selectedCategory == cat.id}"></option>
+                </select>
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Поиск
+                </button>
+            </form>
+        </div>
+
+        <div class="row">
+            <div th:each="video : ${videos}" class="col-md-4 mb-4">
+                <div class="card video-card">
+                    <a th:href="@{/videos/{id}(id=${video.id})}" style="text-decoration: none; color: inherit;">
+                        <img th:if="${video.previewPath != null}" 
+                             th:src="@{/videos/{id}/preview(id=${video.id})}" 
+                             class="card-img-top video-thumbnail" 
+                             alt="Preview">
+                        <div th:unless="${video.previewPath != null}" 
+                             class="video-thumbnail d-flex align-items-center justify-content-center text-white">
+                            <i class="bi bi-play-circle" style="font-size: 3rem;"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${video.title}"></h5>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-person"></i> <span th:text="${video.author.username}"></span>
+                                <span th:if="${video.category != null}">
+                                    | <i class="bi bi-tag"></i> <span th:text="${video.category.name}"></span>
+                                </span>
+                            </p>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-calendar"></i> 
+                                <span th:text="${#temporals.format(video.createdAt, 'dd.MM.yyyy')}"></span>
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(videos)}" class="text-center mt-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">Видео не найдены</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

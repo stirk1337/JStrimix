@@ -31,4 +31,7 @@ public interface VideoRepository
     // Пара удобных методов
     List<Video> findByCategory_Name(String categoryName);
     List<Video> findByTitleContainingIgnoreCase(String q);
+    
+    @EntityGraph(attributePaths = {"author", "category"})
+    List<Video> findByAuthor_Id(Long authorId);
 }
