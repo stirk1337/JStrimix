@@ -2,10 +2,12 @@ package ru.r_mavlyutov.JStrimix.dao;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.r_mavlyutov.JStrimix.entity.Subscription;
 
 import java.util.List;
 
+@RepositoryRestResource(path = "subscriptions", collectionResourceRel = "subscriptions")
 public interface SubscriptionRepository extends CrudRepository<Subscription, Long> {
 
     List<Subscription> findAll();
