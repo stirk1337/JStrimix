@@ -37,6 +37,7 @@ class VideoServiceImplTest {
         User u = new User();
         u.setId(id);
         u.setUsername("author");
+        u.setRoles("USER");
         return u;
     }
 

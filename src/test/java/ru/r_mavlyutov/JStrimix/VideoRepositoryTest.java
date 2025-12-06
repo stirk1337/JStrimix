@@ -31,6 +31,7 @@ class VideoRepositoryTest {
         author.setUsername("alice");
         author.setEmail("alice@example.org");
         author.setPassword("$2a$10$hash"); // BCrypt-заглушка
+        author.setRoles("USER");
         userRepository.save(author);
 
         Category cat = new Category();

@@ -26,12 +26,14 @@ class SubscriptionRepositoryTest {
         channel.setUsername("channelA");
         channel.setEmail("chA@example.org");
         channel.setPassword("$2a$10$hash");
+        channel.setRoles("USER");
         userRepository.save(channel);
 
         User subscriber = new User();
         subscriber.setUsername("bob");
         subscriber.setEmail("bob@example.org");
         subscriber.setPassword("$2a$10$hash");
+        subscriber.setRoles("USER");
         userRepository.save(subscriber);
 
         Subscription s = new Subscription();
