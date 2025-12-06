@@ -1,5 +1,7 @@
 package ru.r_mavlyutov.JStrimix.dao;
 
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.r_mavlyutov.JStrimix.dao.custom.VideoRepositoryCustom;
@@ -13,6 +15,10 @@ public interface VideoRepository
         extends CrudRepository<Video, Long>, VideoRepositoryCustom {
 
     List<Video> findAll();
+
+    @EntityGraph(attributePaths = {"author", "category"})
+    @Query("SELECT v FROM Video v")
+    List<Video> findAllWithAuthorAndCategory();
 
     // Требование задания: Query Lookup с ключевыми словами And + Between
     // Поиск видео по автору и интервалу дат создания

@@ -4,12 +4,14 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.EnableAsync;
 import ru.r_mavlyutov.JStrimix.entity.Video;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
+@EnableAsync
 public class AppConfig {
 
     @Bean
