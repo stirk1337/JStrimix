@@ -1,0 +1,59 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id integer [primary key, increment]
+  username varchar [not null, unique]
+  email varchar [not null, unique]
+  password varchar [not null, note: 'BCrypt hash']
+}
+
+Table categories {
+  id integer [primary key, increment]
+  name varchar [not null, unique]
+}
+
+Table videos {
+  id integer [primary key, increment]
+  title varchar [not null]
+  description text [note: 'Описание видео']
+  video_path varchar [not null, note: 'Файл/URL видео']
+  preview_path varchar [note: 'Файл/URL превью']
+  author_id integer [not null]
+  category_id integer
+  created_at timestamp
+}
+
+Table comments {
+  id integer [primary key, increment]
+  user_id integer [not null]
+  video_id integer [not null]
+  message text [not null, note: 'Текст комментария']
+  created_at timestamp
+
+}
+
+Table subscriptions {
+  id integer [primary key, increment]
+  subscriber_id integer [not null]
+  channel_id integer [not null]
+  created_at timestamp
+}
+
+
+
+
+
+
+Ref: "videos"."author_id" < "users"."id"
+
+
+Ref: "subscriptions"."subscriber_id" < "users"."id"
+
+Ref: "subscriptions"."channel_id" < "users"."id"
+
+Ref: "videos"."category_id" < "categories"."id"
+
+Ref: "comments"."video_id" < "videos"."id"
+
+Ref: "comments"."user_id" < "users"."id"

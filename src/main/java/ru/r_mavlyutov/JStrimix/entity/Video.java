@@ -1,51 +1,61 @@
 package ru.r_mavlyutov.JStrimix.entity;
 
+
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
+
+@Entity
+@Table(name = "videos")
 public class Video {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
-    private String description;
-    private int durationSec;
-    private int views;
 
-    public Video() {}
+    @Lob
+    @Column(columnDefinition = "text")
+    private String description; // Описание видео
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "video_path", nullable = false)
+    private String videoPath;    // Файл/URL видео
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "preview_path")
+    private String previewPath;  // Файл/URL превью
 
-    public String getTitle() {
-        return title;
-    }
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_videos_author"))
+    private User author;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id",
+            foreignKey = @ForeignKey(name = "fk_videos_category"))
+    private Category category;
 
-    public String getDescription() {
-        return description;
-    }
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getDuration() {
-        return durationSec;
-    }
-
-    public void setDuration(int durationSec) {
-        this.durationSec = durationSec;
-    }
-
-    public int getViews() {
-        return views;
-    }
-
-    public void setViews(int views) {
-        this.views = views;
-    }
+    // getters/setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getVideoPath() { return videoPath; }
+    public void setVideoPath(String videoPath) { this.videoPath = videoPath; }
+    public String getPreviewPath() { return previewPath; }
+    public void setPreviewPath(String previewPath) { this.previewPath = previewPath; }
+    public User getAuthor() { return author; }
+    public void setAuthor(User author) { this.author = author; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

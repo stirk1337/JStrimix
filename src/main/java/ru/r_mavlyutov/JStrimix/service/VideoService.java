@@ -1,13 +1,25 @@
 package ru.r_mavlyutov.JStrimix.service;
 
 import ru.r_mavlyutov.JStrimix.entity.Video;
-import java.util.List;
 
 public interface VideoService {
-    void uploadVideo(Long id, String title, String description, int duration);
-    Video getVideoById(Long id);
-    void deleteVideo(Long id);
-    void updateVideoInfo(Long id, String title, String description);
-    void incrementViews(Long id);
-    List<Video> getAllVideos();
+
+    /**
+     * Создаёт видео и сразу добавляет первый комментарий автора — в одной транзакции.
+     * Если что-то падает при добавлении комментария, видео не создаётся.
+     */
+    Video createVideoWithFirstComment(
+            Long authorId,
+            String title,
+            String description,
+            String videoPath,
+            String previewPath,
+            String firstCommentMessage
+    );
+
+    /**
+     * Удаляет видео и все связанные комментарии/лайки/дизлайки — в одной транзакции.
+     * Если на любом шаге будет ошибка, весь набор изменений откатывается.
+     */
+    void deleteVideoWithAllRelations(Long videoId);
 }
