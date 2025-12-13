@@ -1,6 +1,7 @@
 package ru.r_mavlyutov.JStrimix.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.r_mavlyutov.JStrimix.dao.VideoRepository;
 import ru.r_mavlyutov.JStrimix.dao.custom.VideoRepositoryImpl;
@@ -22,6 +23,7 @@ public class VideoCustomController {
      * GET /videos/custom/byAuthor?username=ramil&from=2025-01-01T00:00:00Z&to=2025-12-31T23:59:59Z
      */
     @GetMapping("/byAuthor")
+    @Transactional(readOnly = true)
     public List<Video> getByAuthorAndPeriod(
             @RequestParam String username,
             @RequestParam(required = false) Instant from,
@@ -35,11 +37,13 @@ public class VideoCustomController {
      * GET /videos/custom/byCategory?categoryName=Music
      */
     @GetMapping("/byCategory")
+    @Transactional(readOnly = true)
     public List<Video> getByCategory(@RequestParam String categoryName) {
         return videoRepositoryCustom.findByCategoryNameCriteria(categoryName);
     }
 
     @GetMapping("/byId")
+    @Transactional(readOnly = true)
     public Video getById(@RequestParam Long id) {
         return videoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Video with id " + id + " not found"));

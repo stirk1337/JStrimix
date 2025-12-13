@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.username} + ' - Профиль - JStrimix'">Профиль - JStrimix</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #667eea;
+            margin: 0 auto 20px;
+        }
+        .video-card {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/videos">
+                <i class="bi bi-play-circle-fill"></i> JStrimix
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/videos">Главная</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/videos/upload">
+                            <i class="bi bi-upload"></i> Загрузить видео
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/profile">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-light btn-sm">Выход</button>
+                        </form>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">Войти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-header">
+        <div class="container text-center">
+            <div class="profile-avatar">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <h2 th:text="${user.username}"></h2>
+            <p class="mb-2">
+                <i class="bi bi-envelope"></i> <span th:text="${user.email}"></span>
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <span>
+                    <i class="bi bi-film"></i> <strong th:text="${#lists.size(videos)}"></strong> видео
+                </span>
+                <span>
+                    <i class="bi bi-people"></i> <strong th:text="${subscriberCount}"></strong> подписчиков
+                </span>
+            </div>
+            <div sec:authorize="isAuthenticated()" th:if="${!isOwnProfile}" class="mt-3">
+                <form th:if="${!isSubscribed}" 
+                      th:action="@{/profile/{username}/subscribe(username=${user.username})}" 
+                      method="post" 
+                      style="display: inline;">
+                    <button type="submit" class="btn btn-light">
+                        <i class="bi bi-plus-circle"></i> Подписаться
+                    </button>
+                </form>
+                <form th:if="${isSubscribed}" 
+                      th:action="@{/profile/{username}/unsubscribe(username=${user.username})}" 
+                      method="post" 
+                      style="display: inline;">
+                    <button type="submit" class="btn btn-outline-light">
+                        <i class="bi bi-check-circle"></i> Подписан
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <h3 class="mb-4">Видео пользователя</h3>
+
+        <div class="row">
+            <div th:each="video : ${videos}" class="col-md-4 mb-4">
+                <div class="card video-card">
+                    <a th:href="@{/videos/{id}(id=${video.id})}" style="text-decoration: none; color: inherit;">
+                        <img th:if="${video.previewPath != null}" 
+                             th:src="@{/videos/{id}/preview(id=${video.id})}" 
+                             class="card-img-top video-thumbnail" 
+                             alt="Preview">
+                        <div th:unless="${video.previewPath != null}" 
+                             class="video-thumbnail d-flex align-items-center justify-content-center text-white">
+                            <i class="bi bi-play-circle" style="font-size: 3rem;"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${video.title}"></h5>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-calendar"></i> 
+                                <span th:text="${#temporals.format(video.createdAt, 'dd.MM.yyyy')}"></span>
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(videos)}" class="text-center mt-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">У пользователя пока нет видео</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
